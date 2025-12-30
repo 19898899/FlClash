@@ -53,6 +53,43 @@ jobs:
           flutter --version
           flutter pub get
 
+      - name: Generate Freezed Code
+        run: |
+          echo "=== 清理旧的生成文件 ==="
+          rm -rf lib/models/generated/
+          rm -rf .dart_tool/build/
+          
+          echo "=== 重新生成 freezed 代码 ==="
+          flutter packages pub run build_runner build --delete-conflicting-outputs
+          
+          echo "=== 验证生成的代码 ==="
+          if [ ! -f "lib/models/generated/profile.g.dart" ]; then
+            echo "❌ 错误：未能生成 profile.g.dart"
+            exit 1
+          fi
+          
+          # 检查文件是否完整
+          if ! grep -q "FreezedGenerator" lib/models/generated/profile.g.dart; then
+            echo "❌ 错误：生成文件缺少 FreezedGenerator 部分"
+            echo "显示文件内容："
+            cat lib/models/generated/profile.g.dart
+            exit 1
+          fi
+          
+          # 检查是否包含 originalFilePath
+          grep_count=$(grep -c "originalFilePath" lib/models/generated/profile.g.dart || true)
+          if [ "$grep_count" -lt 3 ]; then
+            echo "❌ 错误：生成文件中 originalFilePath 出现次数不足（至少3次）"
+            echo "实际出现次数：$grep_count"
+            grep -n "originalFilePath" lib/models/generated/profile.g.dart || true
+            exit 1
+          fi
+          
+          echo "✅ 生成文件验证通过：找到 $grep_count 处 originalFilePath"
+          
+          echo "=== 运行代码分析 ==="
+          dart analyze lib/models/profile.dart
+
       - name: Setup
         run: dart setup.dart ${{ matrix.platform }} ${{ matrix.arch && format('--arch {0}', matrix.arch) }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }}
 
