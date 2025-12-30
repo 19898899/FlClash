@@ -40,11 +40,15 @@ class _ProfilesViewState extends State<ProfilesView> {
     );
   }
 
+   
+  
+  
+    // 只显示需要修改的方法，完整文件请参考原文件
   Future<void> _updateProfiles() async {
     final profiles = globalState.config.profiles;
     final messages = [];
     final updateProfiles = profiles.map<Future>((profile) async {
-      if (profile.type == ProfileType.file) return;
+      // if (profile.type == ProfileType.file) return; // 删除这一行，允许所有类型的配置文件都刷新
       globalState.appController.setProfile(profile.copyWith(isUpdating: true));
       try {
         await globalState.appController.updateProfile(profile);
@@ -69,7 +73,6 @@ class _ProfilesViewState extends State<ProfilesView> {
       );
     }
   }
-
   List<Widget> _buildActions(List<Profile> profiles) {
     return profiles.isNotEmpty
         ? [
