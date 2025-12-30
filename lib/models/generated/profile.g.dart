@@ -23,68 +23,69 @@ Map<String, dynamic> _$SubscriptionInfoToJson(_SubscriptionInfo instance) =>
     };
 
 _Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
-  id: json['id'] as String,
-  label: json['label'] as String?,
-  currentGroupName: json['currentGroupName'] as String?,
-  url: json['url'] as String? ?? '',
-  lastUpdateDate: json['lastUpdateDate'] == null
-      ? null
-      : DateTime.parse(json['lastUpdateDate'] as String),
-  autoUpdateDuration: Duration(
-    microseconds: (json['autoUpdateDuration'] as num).toInt(),
-  ),
-  subscriptionInfo: json['subscriptionInfo'] == null
-      ? null
-      : SubscriptionInfo.fromJson(
-          json['subscriptionInfo'] as Map<String, dynamic>,
-        ),
-  autoUpdate: json['autoUpdate'] as bool? ?? true,
-  selectedMap:
-      (json['selectedMap'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ) ??
-      const {},
-  unfoldSet:
-      (json['unfoldSet'] as List<dynamic>?)?.map((e) => e as String).toSet() ??
-      const {},
-  overrideData: json['overrideData'] == null
-      ? const OverrideData()
-      : OverrideData.fromJson(json['overrideData'] as Map<String, dynamic>),
-  overwrite: json['overwrite'] == null
-      ? const Overwrite()
-      : Overwrite.fromJson(json['overwrite'] as Map<String, dynamic>),
-);
+      id: json['id'] as String,
+      label: json['label'] as String?,
+      currentGroupName: json['currentGroupName'] as String?,
+      url: json['url'] as String? ?? '',
+      originalFilePath: json['originalFilePath'] as String? ?? '',
+      lastUpdateDate: json['lastUpdateDate'] == null
+          ? null
+          : DateTime.parse(json['lastUpdateDate'] as String),
+      autoUpdateDuration: Duration(
+        microseconds: (json['autoUpdateDuration'] as num).toInt(),
+      ),
+      subscriptionInfo: json['subscriptionInfo'] == null
+          ? null
+          : SubscriptionInfo.fromJson(
+              json['subscriptionInfo'] as Map<String, dynamic>,
+            ),
+      autoUpdate: json['autoUpdate'] as bool? ?? true,
+      selectedMap:
+          (json['selectedMap'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, e as String),
+              ) ??
+              const {},
+      unfoldSet:
+          (json['unfoldSet'] as List<dynamic>?)
+                  ?.map((e) => e as String)
+                  .toSet() ??
+              const {},
+      overrideData: json['overrideData'] == null
+          ? const OverrideData()
+          : OverrideData.fromJson(json['overrideData'] as Map<String, dynamic>),
+      overwrite: json['overwrite'] == null
+          ? const Overwrite()
+          : Overwrite.fromJson(json['overwrite'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$ProfileToJson(_Profile instance) => <String, dynamic>{
-  'id': instance.id,
-  'label': instance.label,
-  'currentGroupName': instance.currentGroupName,
-  'url': instance.url,
-  'lastUpdateDate': instance.lastUpdateDate?.toIso8601String(),
-  'autoUpdateDuration': instance.autoUpdateDuration.inMicroseconds,
-  'subscriptionInfo': instance.subscriptionInfo,
-  'autoUpdate': instance.autoUpdate,
-  'selectedMap': instance.selectedMap,
-  'unfoldSet': instance.unfoldSet.toList(),
-  'overrideData': instance.overrideData,
-  'overwrite': instance.overwrite,
-};
+      'id': instance.id,
+      'label': instance.label,
+      'currentGroupName': instance.currentGroupName,
+      'url': instance.url,
+      'originalFilePath': instance.originalFilePath,
+      'lastUpdateDate': instance.lastUpdateDate?.toIso8601String(),
+      'autoUpdateDuration': instance.autoUpdateDuration.inMicroseconds,
+      'subscriptionInfo': instance.subscriptionInfo,
+      'autoUpdate': instance.autoUpdate,
+      'selectedMap': instance.selectedMap,
+      'unfoldSet': instance.unfoldSet.toList(),
+      'overrideData': instance.overrideData,
+      'overwrite': instance.overwrite,
+    };
 
 _Overwrite _$OverwriteFromJson(Map<String, dynamic> json) => _Overwrite(
-  type:
-      $enumDecodeNullable(_$OverwriteTypeEnumMap, json['type']) ??
-      OverwriteType.standard,
-  standardOverwrite: json['standardOverwrite'] == null
-      ? const StandardOverwrite()
-      : StandardOverwrite.fromJson(
-          json['standardOverwrite'] as Map<String, dynamic>,
-        ),
-  scriptOverwrite: json['scriptOverwrite'] == null
-      ? const ScriptOverwrite()
-      : ScriptOverwrite.fromJson(
-          json['scriptOverwrite'] as Map<String, dynamic>,
-        ),
-);
+      type: $enumDecodeNullable(_$OverwriteTypeEnumMap, json['type']) ??
+          OverwriteType.standard,
+      standardOverwrite: json['standardOverwrite'] == null
+          ? const StandardOverwrite()
+          : StandardOverwrite.fromJson(
+              json['standardOverwrite'] as Map<String, dynamic>),
+      scriptOverwrite: json['scriptOverwrite'] == null
+          ? const ScriptOverwrite()
+          : ScriptOverwrite.fromJson(
+              json['scriptOverwrite'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$OverwriteToJson(_Overwrite instance) =>
     <String, dynamic>{
@@ -100,13 +101,11 @@ const _$OverwriteTypeEnumMap = {
 
 _StandardOverwrite _$StandardOverwriteFromJson(Map<String, dynamic> json) =>
     _StandardOverwrite(
-      addedRules:
-          (json['addedRules'] as List<dynamic>?)
+      addedRules: (json['addedRules'] as List<dynamic>?)
               ?.map((e) => Rule.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      disabledRuleIds:
-          (json['disabledRuleIds'] as List<dynamic>?)
+      disabledRuleIds: (json['disabledRuleIds'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -137,16 +136,13 @@ Map<String, dynamic> _$OverrideDataToJson(_OverrideData instance) =>
 
 _OverrideRule _$OverrideRuleFromJson(Map<String, dynamic> json) =>
     _OverrideRule(
-      type:
-          $enumDecodeNullable(_$OverrideRuleTypeEnumMap, json['type']) ??
+      type: $enumDecodeNullable(_$OverrideRuleTypeEnumMap, json['type']) ??
           OverrideRuleType.added,
-      overrideRules:
-          (json['overrideRules'] as List<dynamic>?)
+      overrideRules: (json['overrideRules'] as List<dynamic>?)
               ?.map((e) => Rule.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      addedRules:
-          (json['addedRules'] as List<dynamic>?)
+      addedRules: (json['addedRules'] as List<dynamic>?)
               ?.map((e) => Rule.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
