@@ -48,6 +48,7 @@ abstract class Profile with _$Profile {
     String? label,
     String? currentGroupName,
     @Default('') String url,
+    @Default('') String originalFilePath,  // 添加这一行
     DateTime? lastUpdateDate,
     required Duration autoUpdateDuration,
     SubscriptionInfo? subscriptionInfo,
