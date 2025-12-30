@@ -201,6 +201,8 @@ extension ProfileExtension on Profile {
     return (await file.lastModified()).microsecondsSinceEpoch;
   }
 
+  
+
   Future<Profile> update() async {
     Uint8List bytes;
     String? newLabel = label;
@@ -228,14 +230,14 @@ extension ProfileExtension on Profile {
       bytes = await file.readAsBytes();
     }
   
-    // 重要：copyWith 需要包含 originalFilePath
+    // 确保 copyWith 包含 originalFilePath
     return await copyWith(
       label: newLabel,
       subscriptionInfo: newSubscriptionInfo ?? subscriptionInfo,
-      // 保持原有的 originalFilePath
-      originalFilePath: originalFilePath,
+      originalFilePath: originalFilePath,  // 确保有这个字段
     ).saveFile(bytes);
   }
+    
   Future<Profile> saveFile(Uint8List bytes) async {
     final message = await coreController.validateConfigFormBytes(bytes);
     if (message.isNotEmpty) {
