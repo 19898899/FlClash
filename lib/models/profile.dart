@@ -48,7 +48,7 @@ abstract class Profile with _$Profile {
     String? label,
     String? currentGroupName,
     @Default('') String url,
-    @Default('') String originalFilePath,  // 添加这一行
+    @Default('') String originalFilePath,
     DateTime? lastUpdateDate,
     required Duration autoUpdateDuration,
     SubscriptionInfo? subscriptionInfo,
@@ -65,10 +65,11 @@ abstract class Profile with _$Profile {
   factory Profile.fromJson(Map<String, Object?> json) =>
       _$ProfileFromJson(json);
 
-  factory Profile.normal({String? label, String url = ''}) {
+  factory Profile.normal({String? label, String url = '', String originalFilePath = ''}) {
     return Profile(
       label: label,
       url: url,
+      originalFilePath: originalFilePath,
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       autoUpdateDuration: defaultUpdateDuration,
     );
@@ -174,6 +175,12 @@ extension ProfileExtension on Profile {
     }
   }
 
+  Future<Profile> reloadFromFile() async {
+    final file = await getFile();
+    final bytes = await file.readAsBytes();
+    return await saveFile(bytes);
+  }
+
   Future<bool> check() async {
     final profilePath = await appPath.getProfilePath(id);
     return await File(profilePath).exists();
@@ -195,13 +202,36 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update() async {
-    final response = await request.getFileResponseForUrl(url);
-    final disposition = response.headers.value('content-disposition');
-    final userinfo = response.headers.value('subscription-userinfo');
+    Uint8List bytes;
+    String? newLabel = label;
+    SubscriptionInfo? newSubscriptionInfo;
+
+    if (type == ProfileType.url) {
+      // URL类型：从网络下载
+      final response = await request.getFileResponseForUrl(url);
+      final disposition = response.headers.value('content-disposition');
+      final userinfo = response.headers.value('subscription-userinfo');
+      bytes = response.data ?? Uint8List.fromList([]);
+      newLabel = label ?? utils.getFileNameForDisposition(disposition) ?? id;
+      newSubscriptionInfo = SubscriptionInfo.formHString(userinfo);
+    } else if (originalFilePath.isNotEmpty) {
+      // 文件类型且有原始路径：从原始文件加载
+      final file = File(originalFilePath);
+      if (!await file.exists()) {
+        throw 'File not exists: $originalFilePath';
+      }
+      bytes = await file.readAsBytes();
+      newLabel = newLabel ?? file.uri.pathSegments.last;
+    } else {
+      // 文件类型但无原始路径：从应用存储加载
+      final file = await getFile();
+      bytes = await file.readAsBytes();
+    }
+
     return await copyWith(
-      label: label ?? utils.getFileNameForDisposition(disposition) ?? id,
-      subscriptionInfo: SubscriptionInfo.formHString(userinfo),
-    ).saveFile(response.data ?? Uint8List.fromList([]));
+      label: newLabel,
+      subscriptionInfo: newSubscriptionInfo ?? subscriptionInfo,
+    ).saveFile(bytes);
   }
 
   Future<Profile> saveFile(Uint8List bytes) async {
