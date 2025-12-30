@@ -205,7 +205,7 @@ extension ProfileExtension on Profile {
     Uint8List bytes;
     String? newLabel = label;
     SubscriptionInfo? newSubscriptionInfo;
-
+  
     if (type == ProfileType.url) {
       // URL类型：从网络下载
       final response = await request.getFileResponseForUrl(url);
@@ -227,13 +227,15 @@ extension ProfileExtension on Profile {
       final file = await getFile();
       bytes = await file.readAsBytes();
     }
-
+  
+    // 重要：copyWith 需要包含 originalFilePath
     return await copyWith(
       label: newLabel,
       subscriptionInfo: newSubscriptionInfo ?? subscriptionInfo,
+      // 保持原有的 originalFilePath
+      originalFilePath: originalFilePath,
     ).saveFile(bytes);
   }
-
   Future<Profile> saveFile(Uint8List bytes) async {
     final message = await coreController.validateConfigFormBytes(bytes);
     if (message.isNotEmpty) {
