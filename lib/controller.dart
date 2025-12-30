@@ -716,6 +716,9 @@ class AppController {
     }
   }
 
+
+  
+    // 只显示需要修改的方法，完整文件请参考原文件
   Future<void> addProfileFormFile() async {
     final platformFile = await safeRun(picker.pickerFile);
     final bytes = platformFile?.bytes;
@@ -725,11 +728,14 @@ class AppController {
     if (!context.mounted) return;
     globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     toProfiles();
-
+  
     final profile = await safeRun(
       () async {
         await Future.delayed(const Duration(milliseconds: 300));
-        return await Profile.normal(label: platformFile?.name).saveFile(bytes);
+        return await Profile.normal(
+          label: platformFile?.name,
+          originalFilePath: platformFile?.path ?? '', // 添加这一行
+        ).saveFile(bytes);
       },
       needLoading: true,
       title: '${appLocalizations.add}${appLocalizations.profile}',
